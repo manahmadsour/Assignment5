@@ -5,5 +5,4 @@ use App\Http\Controllers\StudentController;
 Route::get('/', function () {
     return view('home');
 });
-
-Route::resource('students', StudentController::class);
+Route::get('/index', [StudentController::class, 'index'])->name('index');

@@ -1,5 +1,5 @@
 <?php
-
+//Ahmad Mansour
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -8,9 +8,24 @@ use App\Models\Student;
 class StudentController extends Controller
 {
     // Display a list of students
-    public function index()
+    public function index(Request $request)
     {
-        $students = Student::all(); // Later: add filtering logic
+       
+        $students = Student::when($request->search, function($query, $search) {
+            return $query->where('name', 'like', "%$search%");
+        })
+        ->when($request->min_age, function($query, $minAge) {
+            return $query->where('age', '>=', $minAge);
+        })
+        ->when($request->max_age, function($query, $maxAge) {
+            return $query->where('age', '<=', $maxAge);
+        })
+        ->get();
+
+        if ($request->ajax()) {
+            return view('partials.results', compact('students'));
+        }
+
         return view('index', compact('students'));
     }
 
